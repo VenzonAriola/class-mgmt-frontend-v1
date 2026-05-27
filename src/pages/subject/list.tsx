@@ -1,7 +1,7 @@
 import { CreateButton } from "@/components/refine-ui/buttons/create";
 import { DataTable } from "@/components/refine-ui/data-table/data-table";
 import { ListView } from "@/components/refine-ui/views/list-view";
-import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectTrigger, SelectValue, SelectItem } from "@/components/ui/select";
 import { DEPARTMENT_OPTIONS } from "@/constants";
