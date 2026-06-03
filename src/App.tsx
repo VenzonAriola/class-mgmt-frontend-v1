@@ -4,21 +4,22 @@ import {
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import { BrowserRouter, Route, Routes, Outlet } from "react-router";
-import routerProvider, { NavigateToResource, CatchAllNavigate, UnsavedChangesNotifier, DocumentTitleHandler } from "@refinedev/react-router";
+import routerProvider, { UnsavedChangesNotifier, DocumentTitleHandler } from "@refinedev/react-router";
 import { dataProvider } from "./providers/data";
-import { ErrorComponent } from "./components/refine-ui/layout/error-component";
+//import { ErrorComponent } from "./components/refine-ui/layout/error-component";
 import { Layout } from "./components/refine-ui/layout/layout";
-import { Header } from "./components/refine-ui/layout/header";
+//import { Header } from "./components/refine-ui/layout/header";
 import { useNotificationProvider } from "./components/refine-ui/notification/use-notification-provider";
 import { Toaster } from "./components/refine-ui/notification/toaster";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import './App.css'
 import Dashboard from './pages/dashboard';
-import { Book, BookOpen, GraduationCap, Home, HomeIcon, } from 'lucide-react';
+import { BookOpen, GraduationCap, Home, } from 'lucide-react';
 import SubjectList from './pages/subject/list';
 import SubjectCreate from './pages/subject/create';
 import ClassesList from './pages/classes/list';
 import ClassesCreate from './pages/classes/create';
+import ClassesShow from './pages/classes/show';
 
 
 
@@ -39,23 +40,26 @@ function App() {
                         warnWhenUnsavedChanges: true,
                         
                     }}
-                       resources={[
+                        resources={[
                             {
                                 name: "Dashboard",
                                 list: "/", meta: {label: 'Home', icon: <Home />}
                             },
                             {
-                                name: "Subjects",
-                                list: "/subjects", 
-                                create: '/subjects/create',
-                                meta: {label: 'Subjects', icon: <BookOpen /> }
+                                name: "subjects",
+                                list: "/subjects",
+                                create: "/subjects/create",
+                                meta: {label: "Subjects", icon: <BookOpen /> }
                             },
                             {
-                                name: "Classes",
+                                name: "classes",
                                 list: "/classes",
-                                create: '/classes/create',
+                                create: "/classes/create",
+                                show: "/classes/show/:id",
                                 meta: {label: 'Classes', icon: <GraduationCap /> }
-                            }
+                            },
+
+                            
                         ]}
                     >
                         <Routes>
@@ -72,6 +76,7 @@ function App() {
                                 <Route path="classes" >
                                     <Route index element={<ClassesList />} />
                                     <Route path="create" element={<ClassesCreate />} />
+                                    <Route path="show/:id" element={<ClassesShow />} />
                                 </Route>
                             </Route>
                             

@@ -1,6 +1,6 @@
 import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
 import { BACKEND_BASE_URL } from "@/constants";
-import { ListResponse, CreateResponse } from "@/types";
+import { ListResponse, CreateResponse, GetOneResponse } from "@/types";
 import {  HttpError } from "@refinedev/core";
 
 type ApiListResponse<T = unknown> = ListResponse<T> & {
@@ -21,9 +21,10 @@ const buildHttpError = async (response: Response) : Promise<HttpError> => {
         // Ifgnore errors
     }
 
-    return{
+    return {
         message,
         status: response.status,
+        statusCode: response.status,
     }
 
 }
@@ -102,6 +103,17 @@ const options : CreateDataProviderOptions = {
             const json: CreateResponse = await response.json();
 
             return json.data??[];
+        }
+    },
+
+    getOne: {
+        getEndpoint:({ resource,id }) => `${resource}/${id}`,
+
+
+        mapResponse: async(response) =>{
+            const json : GetOneResponse = await response.json();
+
+            return json.data ?? json ;
         }
     }
 
