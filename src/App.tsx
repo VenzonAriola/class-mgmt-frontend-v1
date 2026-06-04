@@ -14,12 +14,15 @@ import { Toaster } from "./components/refine-ui/notification/toaster";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import './App.css'
 import Dashboard from './pages/dashboard';
-import { BookOpen, GraduationCap, Home, } from 'lucide-react';
+import { BookOpen, Building, GraduationCap, Home, } from 'lucide-react';
 import SubjectList from './pages/subject/list';
 import SubjectCreate from './pages/subject/create';
+import SubjectShow from './pages/subject/show';
 import ClassesList from './pages/classes/list';
 import ClassesCreate from './pages/classes/create';
 import ClassesShow from './pages/classes/show';
+import DepartmentsList from './pages/departments/list';
+import DepartmentsCreate from './pages/departments/create';
 
 
 
@@ -49,6 +52,7 @@ function App() {
                                 name: "subjects",
                                 list: "/subjects",
                                 create: "/subjects/create",
+                                show:"/subjects/show/:id",
                                 meta: {label: "Subjects", icon: <BookOpen /> }
                             },
                             {
@@ -57,6 +61,13 @@ function App() {
                                 create: "/classes/create",
                                 show: "/classes/show/:id",
                                 meta: {label: 'Classes', icon: <GraduationCap /> }
+                            },
+                                {
+                                name: "departments",
+                                list: "/departments",
+                                create: "/departments/create",
+                                show: "/departments/show/:id",
+                                meta: {label: 'Departments', icon: <Building /> }
                             },
 
                             
@@ -72,11 +83,17 @@ function App() {
                                 <Route path="subjects" >
                                     <Route index element={<SubjectList />} />
                                     <Route path="create" element={<SubjectCreate />} />
+                                    <Route path="show/:id" element={<SubjectShow />} />
                                 </Route>
                                 <Route path="classes" >
                                     <Route index element={<ClassesList />} />
                                     <Route path="create" element={<ClassesCreate />} />
                                     <Route path="show/:id" element={<ClassesShow />} />
+                                </Route>
+                                <Route path="departments" >
+                                    <Route index element={<DepartmentsList />} />
+                                    <Route path="create" element={<DepartmentsCreate />} />
+                                    {/*<Route path="show/:id" element={<DepartmentsShow />} */}
                                 </Route>
                             </Route>
                             
