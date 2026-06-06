@@ -13,7 +13,7 @@ import {
   ShowView,
   ShowViewHeader,
 } from "@/components/refine-ui/views/show-view";
-import type { Department, Subject } from "@/types";
+import type { Department, } from "@/types";
 
 type SubjectDetails = {
   id: number;
