@@ -1,10 +1,11 @@
 import { 
+    Authenticated,
     Refine,          
 } from '@refinedev/core';
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import { BrowserRouter, Route, Routes, Outlet } from "react-router";
-import routerProvider, { UnsavedChangesNotifier, DocumentTitleHandler } from "@refinedev/react-router";
+import routerProvider, { UnsavedChangesNotifier, DocumentTitleHandler, NavigateToResource } from "@refinedev/react-router";
 import { dataProvider } from "./providers/data";
 //import { ErrorComponent } from "./components/refine-ui/layout/error-component";
 import { Layout } from "./components/refine-ui/layout/layout";
@@ -23,6 +24,9 @@ import ClassesCreate from './pages/classes/create';
 import ClassesShow from './pages/classes/show';
 import DepartmentsList from './pages/departments/list';
 import DepartmentsCreate from './pages/departments/create';
+import { Login } from './pages/login';
+import { Register } from './pages/register';
+import { authProvider } from './providers/auth';
 
 
 
@@ -36,6 +40,7 @@ function App() {
             <DevtoolsProvider>
                 <Refine 
                 dataProvider={dataProvider}
+                authProvider = {authProvider}
                 notificationProvider={useNotificationProvider()}
                 routerProvider={routerProvider} 
                     options={{
@@ -74,10 +79,21 @@ function App() {
                         ]}
                     >
                         <Routes>
-                            < Route element={
-                                <Layout >
-                                    <Outlet />                             
-                                </Layout>}>
+                            <Route  element={
+                                <Authenticated key="public-routes" fallback={<Outlet />}>
+                                    <NavigateToResource fallbackTo="/"/>
+                                </Authenticated>                               
+                            }>
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/register" element={<Register />} />
+                            </Route>    
+                            <Route element={
+                                    <Authenticated key="private-routes" fallback={<Login />}>
+                                    <Layout>
+                                        <Outlet />
+                                    </Layout>
+                                    </Authenticated>
+                            }>
 
                                 <Route path="/" element={<Dashboard />}   />
                                 <Route path="subjects" >
