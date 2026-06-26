@@ -15,7 +15,7 @@ import { Toaster } from "./components/refine-ui/notification/toaster";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import './App.css'
 import Dashboard from './pages/dashboard';
-import { BookOpen, Building, GraduationCap, Home, } from 'lucide-react';
+import { BookOpen, Building, ClipboardCheck, GraduationCap, Home, } from 'lucide-react';
 import SubjectList from './pages/subject/list';
 import SubjectCreate from './pages/subject/create';
 import SubjectShow from './pages/subject/show';
@@ -24,6 +24,9 @@ import ClassesCreate from './pages/classes/create';
 import ClassesShow from './pages/classes/show';
 import DepartmentsList from './pages/departments/list';
 import DepartmentsCreate from './pages/departments/create';
+import EnrollmentsCreate from './pages/enrollments/create'
+import EnrollmentsConfirm from './pages/enrollments/confirm'
+import EnrollmentsJoin from './pages/enrollments/join'
 import { Login } from './pages/login';
 import { Register } from './pages/register';
 import { authProvider } from './providers/auth';
@@ -74,6 +77,12 @@ function App() {
                                 show: "/departments/show/:id",
                                 meta: {label: 'Departments', icon: <Building /> }
                             },
+                            {
+                                name:"enrollments",
+                                list:"/enrollments/create",
+                                create:"/enrollments/create",
+                                meta:{label:'Enrollments' , icon: <ClipboardCheck />}
+                            }
 
                             
                         ]}
@@ -96,6 +105,7 @@ function App() {
                             }>
 
                                 <Route path="/" element={<Dashboard />}   />
+                                
                                 <Route path="subjects" >
                                     <Route index element={<SubjectList />} />
                                     <Route path="create" element={<SubjectCreate />} />
@@ -110,6 +120,11 @@ function App() {
                                     <Route index element={<DepartmentsList />} />
                                     <Route path="create" element={<DepartmentsCreate />} />
                                     {/*<Route path="show/:id" element={<DepartmentsShow />} */}
+                                </Route>
+                                <Route path="enrollments" >
+                                    <Route path="create" element={<EnrollmentsCreate />} />
+                                    <Route path="confirm" element={<EnrollmentsConfirm />} />
+                                    <Route path="join" element={<EnrollmentsJoin />} />
                                 </Route>
                             </Route>
                             
