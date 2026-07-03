@@ -15,7 +15,7 @@ import { Toaster } from "./components/refine-ui/notification/toaster";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import './App.css'
 import Dashboard from './pages/dashboard';
-import { BookOpen, Building, ClipboardCheck, GraduationCap, Home, } from 'lucide-react';
+import { BookOpen, Building, ClipboardCheck, GraduationCap, Home, User } from 'lucide-react';
 import SubjectList from './pages/subject/list';
 import SubjectCreate from './pages/subject/create';
 import SubjectShow from './pages/subject/show';
@@ -24,6 +24,9 @@ import ClassesCreate from './pages/classes/create';
 import ClassesShow from './pages/classes/show';
 import DepartmentsList from './pages/departments/list';
 import DepartmentsCreate from './pages/departments/create';
+import DepartmentsShow from './pages/departments/show'
+import FacultyList from './pages/faculty/list'
+import FacultyShow from './pages/faculty/show'
 import EnrollmentsCreate from './pages/enrollments/create'
 import EnrollmentsConfirm from './pages/enrollments/confirm'
 import EnrollmentsJoin from './pages/enrollments/join'
@@ -78,6 +81,12 @@ function App() {
                                 meta: {label: 'Departments', icon: <Building /> }
                             },
                             {
+                                name: "users",
+                                list: "/faculty",
+                                show: "/faculty/show/:id",
+                                meta: {label:'Faculty', icon:<User />}
+                            },
+                            {
                                 name:"enrollments",
                                 list:"/enrollments/create",
                                 create:"/enrollments/create",
@@ -119,7 +128,11 @@ function App() {
                                 <Route path="departments" >
                                     <Route index element={<DepartmentsList />} />
                                     <Route path="create" element={<DepartmentsCreate />} />
-                                    {/*<Route path="show/:id" element={<DepartmentsShow />} */}
+                                    <Route path="show/:id" element={<DepartmentsShow />} />
+                                </Route>
+                                <Route path="faculty" >
+                                    <Route index element={<FacultyList />} />
+                                    <Route path="show/:id" element={<FacultyShow />} />
                                 </Route>
                                 <Route path="enrollments" >
                                     <Route path="create" element={<EnrollmentsCreate />} />

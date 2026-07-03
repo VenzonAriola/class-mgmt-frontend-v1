@@ -4,12 +4,11 @@ import { UserAvatar } from "@/components/refine-ui/layout/user-avatar";
 import { cn } from "@/lib/utils";
 
 type User = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  email: string;
-  avatar?: string;
+  id: string;
+  name?: string;
+  email?: string;
+  image?: string;
+  role?: string;
 };
 
 export function UserInfo() {
@@ -27,7 +26,8 @@ export function UserInfo() {
     );
   }
 
-  const { firstName, lastName, email } = user;
+  const displayName = user.name ?? user.email ?? "User";
+  const email = user.email ?? "No email";
 
   return (
     <div className={cn("flex", "items-center", "gap-x-2")}>
@@ -42,7 +42,7 @@ export function UserInfo() {
         )}
       >
         <span className={cn("text-sm", "font-medium", "text-muted-foreground")}>
-          {firstName} {lastName}
+          {displayName}
         </span>
         <span className={cn("text-xs", "text-muted-foreground")}>{email}</span>
       </div>

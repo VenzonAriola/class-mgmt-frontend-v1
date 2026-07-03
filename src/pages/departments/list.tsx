@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CreateButton } from '@/components/refine-ui/buttons/create';
 import { DataTable } from '@/components/refine-ui/data-table/data-table';
 import { DEPARTMENT_OPTIONS } from '@/constants';
+import { ShowButton } from "@/components/refine-ui/buttons/show";
 
 
 const DepartmentsList = () => {
@@ -42,6 +43,12 @@ const departmentColumns = useMemo<ColumnDef<Department>[]>(() => [
     cell: ({ getValue }) => <span className="text-foreground">{getValue<string>()}</span>,
     
   },
+  {
+          id:'details',
+          size:140,
+          header: () => <p className="column-title">Details</p>,
+          cell: ({row}) => <ShowButton resource="departments" recordItemId={row.original.id} variant="outline" size="sm">View</ShowButton>
+        },
 ], []);
 
 const departmentTable = useTable<Department>({

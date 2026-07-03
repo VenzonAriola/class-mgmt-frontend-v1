@@ -2,17 +2,20 @@ import {
   useRefineOptions,
   useActiveAuthProvider,
   useLogout,
+  useGetIdentity,
 } from "@refinedev/core";
 import {
   DropdownMenu,
   DropdownMenuItem,
   DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/refine-ui/theme/theme-toggle";
 import { UserAvatar } from "@/components/refine-ui/layout/user-avatar";
 import { useSidebar, SidebarTrigger } from "@/components/ui/sidebar";
-import { LogOutIcon } from "lucide-react";
+import { LogOutIcon, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Header = () => {
@@ -119,6 +122,7 @@ function MobileHeader() {
 
 const UserDropdown = () => {
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
+  const { data: user } = useGetIdentity<{ id?: string; name?: string; email?: string; role?: string }>();
 
   const authProvider = useActiveAuthProvider();
 
@@ -126,23 +130,36 @@ const UserDropdown = () => {
     return null;
   }
 
+  const displayName = user?.name ?? user?.email ?? "User";
+  const role = user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "Member";
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
         <UserAvatar />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel>
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium">{displayName}</p>
+            <p className="text-xs text-muted-foreground">{user?.email ?? "Signed in"}</p>
+            <p className="text-xs text-muted-foreground">{role}</p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="cursor-pointer">
+          <UserRound className="mr-2 h-4 w-4" />
+          <span>Profile</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem
+          className="cursor-pointer text-destructive focus:text-destructive"
           onClick={() => {
             logout();
           }}
         >
-          <LogOutIcon
-            className={cn("text-destructive", "hover:text-destructive")}
-          />
-          <span className={cn("text-destructive", "hover:text-destructive")}>
-            {isLoggingOut ? "Logging out..." : "Logout"}
-          </span>
+          <LogOutIcon className="mr-2 h-4 w-4" />
+          <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
