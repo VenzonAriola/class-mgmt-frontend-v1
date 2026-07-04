@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Department } from "@/types";
+import { defaultListQueryOptions } from "@/lib/query-options";
 
 const subjectCreateSchema = z.object({
   departmentId: z.coerce
@@ -72,6 +73,7 @@ const SubjectsCreate = () => {
     pagination: {
       pageSize: 100,
     },
+    queryOptions: defaultListQueryOptions,
   });
 
   const departments = departmentsQuery.data?.data ?? [];

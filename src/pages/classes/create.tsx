@@ -25,6 +25,7 @@ import {Loader2} from "lucide-react";
 import UploadWidget from "@/components/upload-widget";
 import { url } from "zod/v4/mini";
 import { Subject,User } from "@/types";
+import { defaultListQueryOptions } from "@/lib/query-options";
 
 
 const Create = () => {
@@ -61,6 +62,7 @@ const Create = () => {
         pagination: {
             pageSize: 100,
         },
+        queryOptions: defaultListQueryOptions,
     });
 
     const {query: teachersQuery} = useList<User>({
@@ -71,6 +73,7 @@ const Create = () => {
         pagination: {
             pageSize: 100,
         },
+        queryOptions: defaultListQueryOptions,
     });
 
 

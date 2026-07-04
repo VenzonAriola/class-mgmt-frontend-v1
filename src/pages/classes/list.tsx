@@ -12,6 +12,7 @@ import { useList } from "@refinedev/core";
 import { ColumnDef } from "@tanstack/react-table";
 import { ClassDetails, Subject, User } from "@/types";
 import { ShowButton } from "@/components/refine-ui/buttons/show";
+import { defaultListQueryOptions } from "@/lib/query-options";
 
 const ClassList = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -23,6 +24,7 @@ const ClassList = () => {
         pagination: {
             pageSize: 100,
         },
+        queryOptions: defaultListQueryOptions,
     });
 
     const { query: teachersQuery } = useList<User>({
@@ -37,6 +39,7 @@ const ClassList = () => {
         pagination: {
             pageSize: 100,
         },
+        queryOptions: defaultListQueryOptions,
     });
 
     const subjects = subjectsQuery.data?.data ?? [];
@@ -158,6 +161,7 @@ const ClassList = () => {
                     },
                 ],
             },
+            queryOptions: defaultListQueryOptions,
         },
     });
 

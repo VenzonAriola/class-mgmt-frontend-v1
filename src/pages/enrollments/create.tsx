@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { defaultListQueryOptions } from "@/lib/query-options";
 import {
   Select,
   SelectContent,
@@ -46,6 +47,7 @@ const EnrollmentsCreate = () => {
     pagination: {
       pageSize: 100,
     },
+    queryOptions: defaultListQueryOptions,
   });
 
   const classes = classesQuery.data?.data ?? [];

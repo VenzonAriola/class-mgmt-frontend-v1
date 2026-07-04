@@ -23,6 +23,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { defaultListQueryOptions } from "@/lib/query-options";
 import type { Department, Subject, User } from "@/types";
 
 type ClassListItem = {
@@ -44,21 +45,25 @@ const Dashboard = () => {
   const { query: usersQuery } = useList<User>({
     resource: "users",
     pagination: { mode: "off" },
+    queryOptions: defaultListQueryOptions,
   });
 
   const { query: subjectsQuery } = useList<Subject>({
     resource: "subjects",
     pagination: { mode: "off" },
+    queryOptions: defaultListQueryOptions,
   });
 
   const { query: departmentsQuery } = useList<Department>({
     resource: "departments",
     pagination: { mode: "off" },
+    queryOptions: defaultListQueryOptions,
   });
 
   const { query: classesQuery } = useList<ClassListItem>({
     resource: "classes",
     pagination: { mode: "off" },
+    queryOptions: defaultListQueryOptions,
   });
 
   const users = usersQuery.data?.data ?? [];
