@@ -36,9 +36,13 @@ function isDepartmentDetailsPayload(
       "department" in payload &&
       "totals" in payload &&
       "subjects" in payload &&
+      Array.isArray(payload.subjects) &&
       "classes" in payload &&
+      Array.isArray(payload.classes) &&
       "teachers" in payload &&
-      "students" in payload,
+      Array.isArray(payload.teachers) &&
+      "students" in payload &&
+      Array.isArray(payload.students),
   );
 }
 
