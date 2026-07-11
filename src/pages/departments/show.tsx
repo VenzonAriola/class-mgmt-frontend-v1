@@ -1,19 +1,15 @@
 import { useShow } from "@refinedev/core";
-import { useTable } from "@refinedev/react-table";
-import { ColumnDef } from "@tanstack/react-table";
 import { BookOpen, Layers, Users } from "lucide-react";
-import { useMemo } from "react";
 import { useParams } from "react-router";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTable } from "@/components/refine-ui/data-table/data-table";
-import { ShowButton } from "@/components/refine-ui/buttons/show";
 import {
   ShowView,
   ShowViewHeader,
 } from "@/components/refine-ui/views/show-view";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { Department } from "@/types";
 
 type DepartmentDetails = {
@@ -23,6 +19,10 @@ type DepartmentDetails = {
     classes: number;
     enrolledStudents: number;
   };
+  subjects: DepartmentSubject[];
+  classes: DepartmentClass[];
+  teachers: DepartmentUser[];
+  students: DepartmentUser[];
 };
 
 type DepartmentPayload = DepartmentDetails | Department | undefined;
@@ -30,7 +30,16 @@ type DepartmentPayload = DepartmentDetails | Department | undefined;
 function isDepartmentDetailsPayload(
   payload: DepartmentPayload,
 ): payload is DepartmentDetails {
-  return Boolean(payload && typeof payload === "object" && "department" in payload && "totals" in payload);
+  return Boolean(
+    payload &&
+      typeof payload === "object" &&
+      "department" in payload &&
+      "totals" in payload &&
+      "subjects" in payload &&
+      "classes" in payload &&
+      "teachers" in payload &&
+      "students" in payload,
+  );
 }
 
 type DepartmentSubject = {
@@ -73,6 +82,11 @@ const DepartmentShow = () => {
 
   const { query } = useShow<DepartmentDetails>({
     resource: "departments",
+    queryOptions: {
+      retry: false,
+      refetchOnWindowFocus: false,
+      staleTime: 60_000,
+    },
   });
 
   const payload = query.data?.data as DepartmentPayload;
@@ -91,269 +105,21 @@ const DepartmentShow = () => {
         enrolledStudents: 0,
       };
 
-  const subjectColumns = useMemo<ColumnDef<DepartmentSubject>[]>(
-    () => [
-      {
-        id: "code",
-        accessorKey: "code",
-        size: 120,
-        header: () => <p className="column-title ml-2">Code</p>,
-        cell: ({ getValue }) => {
-          const code = getValue<string>();
-          return code ? (
-            <Badge>{code}</Badge>
-          ) : (
-            <span className="text-muted-foreground ml-2">No code</span>
-          );
-        },
-      },
-      {
-        id: "name",
-        accessorKey: "name",
-        size: 220,
-        header: () => <p className="column-title">Subject</p>,
-        cell: ({ getValue }) => (
-          <span className="text-foreground">{getValue<string>()}</span>
-        ),
-      },
-      {
-        id: "description",
-        accessorKey: "description",
-        size: 320,
-        header: () => <p className="column-title">Description</p>,
-        cell: ({ getValue }) => {
-          const description = getValue<string>();
+  const subjects = payload && isDepartmentDetailsPayload(payload)
+    ? payload.subjects
+    : [];
 
-          return description ? (
-            <span className="truncate line-clamp-2">{description}</span>
-          ) : (
-            <span className="text-muted-foreground">No description</span>
-          );
-        },
-      },
-      {
-        id: "details",
-        size: 140,
-        header: () => <p className="column-title">Details</p>,
-        cell: ({ row }) => (
-          <ShowButton
-            resource="subjects"
-            recordItemId={row.original.id}
-            variant="outline"
-            size="sm"
-          >
-            View
-          </ShowButton>
-        ),
-      },
-    ],
-    []
-  );
+  const classes = payload && isDepartmentDetailsPayload(payload)
+    ? payload.classes
+    : [];
 
-  const classColumns = useMemo<ColumnDef<DepartmentClass>[]>(
-    () => [
-      {
-        id: "name",
-        accessorKey: "name",
-        size: 240,
-        header: () => <p className="column-title">Class</p>,
-        cell: ({ getValue }) => (
-          <span className="text-foreground">{getValue<string>()}</span>
-        ),
-      },
-      {
-        id: "subject",
-        accessorKey: "subject",
-        size: 200,
-        header: () => <p className="column-title">Subject</p>,
-        cell: ({ row }) => {
-          const subject = row.original.subject;
-          if (!subject) {
-            return <span className="text-muted-foreground">No subject</span>;
-          }
-          return (
-            <span className="truncate">
-              {subject.name}
-              {subject.code ? ` (${subject.code})` : ""}
-            </span>
-          );
-        },
-      },
-      {
-        id: "teacher",
-        accessorKey: "teacher",
-        size: 220,
-        header: () => <p className="column-title">Teacher</p>,
-        cell: ({ row }) => {
-          const teacher = row.original.teacher;
-          if (!teacher) {
-            return <span className="text-muted-foreground">Unassigned</span>;
-          }
+  const teachers = payload && isDepartmentDetailsPayload(payload)
+    ? payload.teachers
+    : [];
 
-          return (
-            <div className="flex items-center gap-2">
-              <Avatar className="size-7">
-                {teacher.image && (
-                  <AvatarImage src={teacher.image} alt={teacher.name} />
-                )}
-                <AvatarFallback>{getInitials(teacher.name)}</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col truncate">
-                <span className="truncate">{teacher.name}</span>
-                <span className="text-xs text-muted-foreground truncate">
-                  {teacher.email}
-                </span>
-              </div>
-            </div>
-          );
-        },
-      },
-      {
-        id: "status",
-        accessorKey: "status",
-        size: 120,
-        header: () => <p className="column-title">Status</p>,
-        cell: ({ getValue }) => {
-          const status = getValue<string>();
-          return (
-            <Badge variant={status === "active" ? "default" : "secondary"}>
-              {status ?? "unknown"}
-            </Badge>
-          );
-        },
-      },
-      {
-        id: "details",
-        size: 140,
-        header: () => <p className="column-title">Details</p>,
-        cell: ({ row }) => (
-          <ShowButton
-            resource="classes"
-            recordItemId={row.original.id}
-            variant="outline"
-            size="sm"
-          >
-            View
-          </ShowButton>
-        ),
-      },
-    ],
-    []
-  );
-
-  const userColumns = useMemo<ColumnDef<DepartmentUser>[]>(
-    () => [
-      {
-        id: "name",
-        accessorKey: "name",
-        size: 240,
-        header: () => <p className="column-title">User</p>,
-        cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-            <Avatar className="size-7">
-              {row.original.image && (
-                <AvatarImage src={row.original.image} alt={row.original.name} />
-              )}
-              <AvatarFallback>{getInitials(row.original.name)}</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col truncate">
-              <span className="truncate">{row.original.name}</span>
-              <span className="text-xs text-muted-foreground truncate">
-                {row.original.email}
-              </span>
-            </div>
-          </div>
-        ),
-      },
-      {
-        id: "role",
-        accessorKey: "role",
-        size: 140,
-        header: () => <p className="column-title">Role</p>,
-        cell: ({ getValue }) => (
-          <Badge variant="secondary">{getValue<string>()}</Badge>
-        ),
-      },
-      {
-        id: "details",
-        size: 140,
-        header: () => <p className="column-title">Details</p>,
-        cell: ({ row }) => (
-          <ShowButton
-            resource="users"
-            recordItemId={row.original.id}
-            variant="outline"
-            size="sm"
-          >
-            View
-          </ShowButton>
-        ),
-      },
-    ],
-    []
-  );
-
-  const subjectsTable = useTable<DepartmentSubject>({
-    columns: subjectColumns,
-    refineCoreProps: {
-      resource: `departments/${departmentId}/subjects`,
-      pagination: {
-        pageSize: 10,
-        mode: "server",
-      },
-    },
-  });
-
-  const classesTable = useTable<DepartmentClass>({
-    columns: classColumns,
-    refineCoreProps: {
-      resource: `departments/${departmentId}/classes`,
-      pagination: {
-        pageSize: 10,
-        mode: "server",
-      },
-    },
-  });
-
-  const teachersTable = useTable<DepartmentUser>({
-    columns: userColumns,
-    refineCoreProps: {
-      resource: `departments/${departmentId}/users`,
-      pagination: {
-        pageSize: 10,
-        mode: "server",
-      },
-      filters: {
-        permanent: [
-          {
-            field: "role",
-            operator: "eq",
-            value: "teacher",
-          },
-        ],
-      },
-    },
-  });
-
-  const studentsTable = useTable<DepartmentUser>({
-    columns: userColumns,
-    refineCoreProps: {
-      resource: `departments/${departmentId}/users`,
-      pagination: {
-        pageSize: 10,
-        mode: "server",
-      },
-      filters: {
-        permanent: [
-          {
-            field: "role",
-            operator: "eq",
-            value: "student",
-          },
-        ],
-      },
-    },
-  });
+  const students = payload && isDepartmentDetailsPayload(payload)
+    ? payload.students
+    : [];
 
   if (query.isLoading || query.isError || !department) {
     return (
@@ -421,7 +187,36 @@ const DepartmentShow = () => {
           <Badge variant="secondary">{totals.subjects}</Badge>
         </CardHeader>
         <CardContent>
-          <DataTable table={subjectsTable} />
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Code</TableHead>
+                <TableHead>Subject</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead className="w-[100px]">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {subjects.length ? subjects.map((subject) => (
+                <TableRow key={subject.id}>
+                  <TableCell>{subject.code ?? "—"}</TableCell>
+                  <TableCell>{subject.name}</TableCell>
+                  <TableCell className="max-w-[320px] truncate">{subject.description ?? "No description"}</TableCell>
+                  <TableCell>
+                    <a href={`/subjects/show/${subject.id}`} className="text-sm text-primary hover:underline">
+                      View
+                    </a>
+                  </TableCell>
+                </TableRow>
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                    No subjects found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 
@@ -431,7 +226,59 @@ const DepartmentShow = () => {
           <Badge variant="secondary">{totals.classes}</Badge>
         </CardHeader>
         <CardContent>
-          <DataTable table={classesTable} />
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Class</TableHead>
+                <TableHead>Subject</TableHead>
+                <TableHead>Teacher</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="w-[100px]">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {classes.length ? classes.map((classItem) => (
+                <TableRow key={classItem.id}>
+                  <TableCell>{classItem.name}</TableCell>
+                  <TableCell>{classItem.subject?.name ?? "—"}</TableCell>
+                  <TableCell>
+                    {classItem.teacher ? (
+                      <div className="flex items-center gap-2">
+                        <Avatar className="size-7">
+                          {classItem.teacher.image && (
+                            <AvatarImage src={classItem.teacher.image} alt={classItem.teacher.name} />
+                          )}
+                          <AvatarFallback>{getInitials(classItem.teacher.name)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span className="text-sm">{classItem.teacher.name}</span>
+                          <span className="text-xs text-muted-foreground">{classItem.teacher.email}</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">Unassigned</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={classItem.status === "active" ? "default" : "secondary"}>
+                      {classItem.status ?? "unknown"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <a href={`/classes/show/${classItem.id}`} className="text-sm text-primary hover:underline">
+                      View
+                    </a>
+                  </TableCell>
+                </TableRow>
+              )) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
+                    No classes found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 
@@ -441,7 +288,49 @@ const DepartmentShow = () => {
             <CardTitle>Teachers</CardTitle>
           </CardHeader>
           <CardContent>
-            <DataTable table={teachersTable} />
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>User</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead className="w-[100px]">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {teachers.length ? teachers.map((teacher) => (
+                  <TableRow key={teacher.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="size-7">
+                          {teacher.image && (
+                            <AvatarImage src={teacher.image} alt={teacher.name} />
+                          )}
+                          <AvatarFallback>{getInitials(teacher.name)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span className="text-sm">{teacher.name}</span>
+                          <span className="text-xs text-muted-foreground">{teacher.email}</span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{teacher.role}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <a href={`/faculty/show/${teacher.id}`} className="text-sm text-primary hover:underline">
+                        View
+                      </a>
+                    </TableCell>
+                  </TableRow>
+                )) : (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center text-muted-foreground">
+                      No teachers found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
 
@@ -450,7 +339,49 @@ const DepartmentShow = () => {
             <CardTitle>Students</CardTitle>
           </CardHeader>
           <CardContent>
-            <DataTable table={studentsTable} />
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>User</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead className="w-[100px]">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {students.length ? students.map((student) => (
+                  <TableRow key={student.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="size-7">
+                          {student.image && (
+                            <AvatarImage src={student.image} alt={student.name} />
+                          )}
+                          <AvatarFallback>{getInitials(student.name)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span className="text-sm">{student.name}</span>
+                          <span className="text-xs text-muted-foreground">{student.email}</span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{student.role}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <a href={`/faculty/show/${student.id}`} className="text-sm text-primary hover:underline">
+                        View
+                      </a>
+                    </TableCell>
+                  </TableRow>
+                )) : (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center text-muted-foreground">
+                      No students found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>

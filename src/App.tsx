@@ -5,8 +5,10 @@ import {
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import { BrowserRouter, Route, Routes, Outlet } from "react-router";
+import RoleRoute from './components/role-route'
 import routerProvider, { UnsavedChangesNotifier, DocumentTitleHandler, NavigateToResource } from "@refinedev/react-router";
 import { dataProvider } from "./providers/data";
+import { accessControlProvider } from './providers/access-control'
 //import { ErrorComponent } from "./components/refine-ui/layout/error-component";
 import { Layout } from "./components/refine-ui/layout/layout";
 //import { Header } from "./components/refine-ui/layout/header";
@@ -47,6 +49,7 @@ function App() {
                 <Refine 
                 dataProvider={dataProvider}
                 authProvider = {authProvider}
+                accessControlProvider={accessControlProvider} 
                 notificationProvider={useNotificationProvider()}
                 routerProvider={routerProvider} 
                     options={{
@@ -117,17 +120,17 @@ function App() {
                                 
                                 <Route path="subjects" >
                                     <Route index element={<SubjectList />} />
-                                    <Route path="create" element={<SubjectCreate />} />
+                                    <Route path="create" element={<RoleRoute allow ={['admin','teacher']}><SubjectCreate /></RoleRoute>} />
                                     <Route path="show/:id" element={<SubjectShow />} />
                                 </Route>
                                 <Route path="classes" >
                                     <Route index element={<ClassesList />} />
-                                    <Route path="create" element={<ClassesCreate />} />
+                                   <Route path="create" element={<RoleRoute allow={['admin', 'teacher']}> <ClassesCreate /></RoleRoute>} /> 
                                     <Route path="show/:id" element={<ClassesShow />} />
                                 </Route>
                                 <Route path="departments" >
                                     <Route index element={<DepartmentsList />} />
-                                    <Route path="create" element={<DepartmentsCreate />} />
+                                    <Route path="create" element={<RoleRoute allow={['admin','teacher',]}><DepartmentsCreate /> </RoleRoute>} />
                                     <Route path="show/:id" element={<DepartmentsShow />} />
                                 </Route>
                                 <Route path="faculty" >
@@ -135,7 +138,7 @@ function App() {
                                     <Route path="show/:id" element={<FacultyShow />} />
                                 </Route>
                                 <Route path="enrollments" >
-                                    <Route path="create" element={<EnrollmentsCreate />} />
+                                    <Route path="create" element={<RoleRoute allow={['admin','student']}><EnrollmentsCreate /></RoleRoute>} />
                                     <Route path="confirm" element={<EnrollmentsConfirm />} />
                                     <Route path="join" element={<EnrollmentsJoin />} />
                                 </Route>

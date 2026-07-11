@@ -75,7 +75,7 @@ export const SignUpForm = () => {
               return;
             }
 
-            toast.success("Account created successfully!", {
+            toast.success("Account created successfully. Please check your inbox and verify your email before signing in.", {
               richColors: true,
             });
             form.reset();
