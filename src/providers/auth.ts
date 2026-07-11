@@ -66,11 +66,14 @@ export const authProvider: AuthProvider ={
 
         if(error){
             console.error("Login error from auth client:", error)
+            const message = typeof error?.message === "string" && error.message.toLowerCase().includes("verify")
+                ? "Please verify your email before signing in."
+                : error?.message || "Please try again later";
             return{
                 success: false,
                 error:{
                     name: "Log in failed",
-                    message: error?.message || "Please try again later"
+                    message,
                 }
             }
         }
