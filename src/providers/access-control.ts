@@ -14,7 +14,14 @@ export const accessControlProvider: AccessControlProvider = {
     const stored = localStorage.getItem("user");
     if (!stored) return { can: false, reason: "Not authenticated" };
 
-    const { role } = JSON.parse(stored) as { role: Role };
+    let role: Role | undefined;
+    try {
+      const parsed = JSON.parse(stored);
+      role = parsed?.role;
+    } catch {
+      return { can: false, reason: "Invalid session data" };
+    }
+    if (!role) return { can: false, reason: "Not authenticated" };
     if (role === "admin") return { can: true };
 
     const allowed = resource ? rules[resource]?.[action] : undefined;
