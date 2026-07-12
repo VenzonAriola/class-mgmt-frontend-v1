@@ -141,7 +141,7 @@ export const authProvider: AuthProvider ={
             email:parsedUser.email,
             image:parsedUser.image,
             role:parsedUser.role,
-            imageCldPubUd: parsedUser.imageCldPubId,
+            imageCldPubId: parsedUser.imageCldPubId,
         }
     }
 
