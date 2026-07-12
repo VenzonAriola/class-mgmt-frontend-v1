@@ -1,60 +1,29 @@
 import type {AuthProvider} from "@refinedev/core";
 import {User, SignUpPayload } from "@/types";
 import {authClient} from "@/lib/auth-client";
-import { User } from "lucide-react";
+//import { User } from "lucide-react";
 
 
 export const authProvider: AuthProvider ={
-    register: async ({
-        email,
-        password,
-        name,
-        role,
-        image,
-        imageCldPubId,
-    } : SignUpPayload) =>{
+    register: async ({ email, password, name, role, image, imageCldPubId }: SignUpPayload) => {
+    try {
+        const { data, error } = await authClient.signUp.email({
+            name, email, password, image, role, imageCldPubId,
+            callbackURL: `${window.location.origin}/login?verified=true`,
+        } as SignUpPayload);
 
-        try{
-            const {data, error} = await authClient.signUp.email({
-                name,
-                email,
-                password,
-                image,
-                role,
-                imageCldPubId,
-            } as SignUpPayload );
-            
-            if(error){
-                return{
-                    success:false,
-                    error: {
-                        name: "Registration Failed",
-                        message:
-                            error?.message || "Unable to create an account. Please try again",
-                    }
-                }
-            }
-
-            //store user data locally
-            localStorage.setItem("user", JSON.stringify(data.user));
-
-            return {
-                success: true,
-                redirectTo: "/"
-            }
-
-        } catch (error){
-            console.log("Register error", error);
-            return{
-                success: false,
-                error: {
-                    name: "Registration Failed",
-                    message: "Unable to create account. Please try again.",
-                }
-            }
+        if (error) {
+            return { success: false, error: { name: "Registration Failed", message: error?.message || "Unable to create an account." } };
         }
-        
-    },
+
+        // Don't store the user or redirect to "/" — there's no session yet until they verify.
+        return { success: true, redirectTo: "/login" };
+    } catch (error) {
+        return { success: false, error: { name: "Registration Failed", message: "Unable to create account. Please try again." } };
+    }
+},
+
+    
 
 
     login: async ({email, password}) =>{
